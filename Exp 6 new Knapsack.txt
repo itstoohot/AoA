@@ -1,0 +1,209 @@
+void main () 
+{ 
+int n, m, w[100], p[100], ratio[100] , i, j, u, temp; 
+float xr, x[100], total_profit=0, total_weight=0; 
+printf ("Enter the number of items(n): "); 
+scanf ("%d", &n); 
+printf ("Enter the capacity of the Knapsack(m): "); 
+scanf ("%d", &m); 
+u = m; 
+for(i=0;i<n;i++) 
+{ 
+x[i]=0; 
+} 
+printf ("Enter the Weights of items: "); 
+for (i = 0; i < n; i++) 
+{ 
+printf ("\n\tWeight of item %d = ", i + 1); 
+scanf ("%d", &w[i]); 
+} 
+printf ("\nEnter the Profit Values of items: "); 
+for (i = 0; i < n; i++) 
+ 
+    { 
+      printf ("\n\tProfit of item %d = ", i + 1); 
+      scanf ("%d", &p[i]); 
+    } 
+ 
+  
+  for (i = 0; i < n; i++) 
+    { 
+      ratio[i] = p[i] / w[i]; 
+    } 
+ 
+   
+  for (i = 0; i < n; i++) 
+    { 
+      for (j = 0; j < n - 1; j++) 
+ { 
+   if (ratio[j] < ratio[i]) 
+     { 
+       temp = ratio[i]; 
+       ratio[i] = ratio[j]; 
+       ratio[j] = temp; 
+        
+       temp = w[i]; 
+       w[i] = w[j]; 
+       w[j] = temp; 
+        
+       temp = p[i]; 
+       p[i] = p[j]; 
+       p[j] = temp; 
+     } 
+ } 
+    } 
+printf("\n The Table After Sorting based on the Ratio: \n"); 
+printf("\nItem:\t\t"); 
+for(i=0;i<n;i++) 
+{ 
+printf("%d\t",i+1); 
+} 
+printf("\nProfit:\t\t"); 
+for(i=0;i<n;i++) 
+{ 
+printf("%d\t",p[i]); 
+} 
+printf("\nWeights:\t"); 
+for(i=0;i<n;i++) 
+{ 
+printf("%d\t",w[i]); 
+} 
+printf ("\nRATIO:\t\t");  
+for (i = 0; i < n; i++) 
+{ 
+printf ("%d\t", ratio[i]); 
+} 
+for(i=0;i<n;i++) 
+{ 
+if(w[i]<=u) 
+{ 
+x[i]=1;      
+u=u-w[i];    
+} 
+else if(w[i]>u) 
+{ 
+break; 
+} 
+} 
+if(i<=n) 
+{ 
+xr = (float)u/w[i];     
+x[i] = xr;        
+} 
+printf("\n X = ["); 
+for(i=0;i<n;i++) 
+{ 
+printf("%.3f , ",x[i]); 
+} 
+printf("]"); 
+for(i=0;i<n;i++) 
+{ 
+total_profit += x[i]*p[i]; 
+total_weight += x[i]*w[i]; 
+} 
+printf("\nTotal Profit = %.2f \n Total Weight = %.2f ",total_profit,total_weight); 
+}
+
+output
+Enter the number of items(n): 5
+Enter the capacity of the Knapsack(m): 60
+Enter the Weights of items:
+        Weight of item 1 = 5
+
+        Weight of item 2 = 10
+
+        Weight of item 3 = 20
+
+        Weight of item 4 = 30
+
+        Weight of item 5 = 40
+
+Enter the Profit Values of items:
+        Profit of item 1 = 30
+
+        Profit of item 2 = 20
+
+        Profit of item 3 = 100
+
+        Profit of item 4 = 90
+
+        Profit of item 5 = 160
+
+ The Table After Sorting based on the Ratio:
+
+Item:           1       2       3       4       5
+Profit:         30      100     160     90      20
+Weights:        5       20      40      30      10
+RATIO:          6       5       4       3       2
+ X = [1.000 , 1.000 , 0.875 , 0.000 , 0.000 , ]
+Total Profit = 270.00
+ Total Weight = 60.00
+
+
+
+//code 2
+
+
+#include <stdio.h>
+int n = 5;
+int p[10] = {3, 3, 2, 5, 1};
+int w[10] = {10, 15, 10, 12, 8};
+int W = 10;
+int main(){
+   int cur_w;
+   float tot_v;
+   int i, maxi;
+   int used[10];
+   for (i = 0; i < n; ++i)
+      used[i] = 0;
+   cur_w = W;
+   while (cur_w > 0) {
+      maxi = -1;
+      for (i = 0; i < n; ++i)
+         if ((used[i] == 0) &&
+               ((maxi == -1) || ((float)w[i]/p[i] > (float)w[maxi]/p[maxi])))
+            maxi = i;
+      used[maxi] = 1;
+      cur_w -= p[maxi];
+      tot_v += w[maxi];
+      if (cur_w >= 0)
+         printf("Added object %d (%d, %d) completely in the bag. Space left: %d.\n", maxi + 1, w[maxi], p[maxi], cur_w);
+      else {
+         printf("Added %d%% (%d, %d) of object %d in the bag.\n", (int)((1 + (float)cur_w/p[maxi]) * 100), w[maxi], p[maxi], maxi + 1);
+         tot_v -= w[maxi];
+         tot_v += (1 + (float)cur_w/p[maxi]) * w[maxi];
+      }
+   }
+   printf("Filled the bag with objects worth %.2f.\n", tot_v);
+   return 0;
+}
+
+
+
+algorithm
+
+
+def fractional_knapsack(value, weight, capacity):
+    # Calculate value to weight ratio for each item
+    ratios = [(v / w, v, w) for v, w in zip(value, weight)]
+    # Sort items by ratio in non-increasing order
+    ratios.sort(reverse=True)
+
+    total_value = 0
+
+    for ratio, v, w in ratios:
+        if capacity >= w:
+            # Take the whole item
+            total_value += v
+            capacity -= w
+        else:
+            # Take a fraction of the item
+            fraction = capacity / w
+            total_value += v * fraction
+            capacity = 0
+            break
+
+    return total_value
+
+
+Time Complexity: O(2^n)
